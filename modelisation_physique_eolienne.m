@@ -85,9 +85,12 @@ fprintf('\n');
 %% 5. MÉTHODE 2: OPTIMISATION POUR TROUVER η ET D OPTIMAUX
 % On minimise l'erreur entre la puissance mesurée et modélisée
 
+% Définir v_cut_out
+v_cut_out_value = 25;  % Vitesse d'arrêt typique (m/s)
+
 % Fonction objectif: minimiser RMSE
 objectif = @(params) calculer_erreur_physique(params, vitesse_vent_valid, ...
-    puissance_elec_valid, rho_air_valid, v_cut_in, v_rated, params_base.v_cut_out);
+    puissance_elec_valid, rho_air_valid, v_cut_in, v_rated, v_cut_out_value);
 
 % Paramètres initiaux: [eta, D]
 % Estimation initiale: η ≈ 0.40, D ≈ sqrt(eta_D2_mean/0.40)
@@ -150,7 +153,7 @@ for i = 1:length(v_model)
     elseif v_model(i) >= v_cut_in && v_model(i) < v_rated
         % Zone de montée: P = η × (16/27) × ρ × (1/2) × V³ × (π×D²/4)
         P_model(i) = eta_opt * (16/27) * rho_mean * 0.5 * v_model(i)^3 * (pi*D_opt^2/4);
-    elseif v_model(i) >= v_rated && v_model(i) < params_base.v_cut_out
+    elseif v_model(i) >= v_rated && v_model(i) < v_cut_out_value
         % Zone nominale: P = P_max
         P_model(i) = P_max;
     else
@@ -172,7 +175,7 @@ for i = 1:length(vitesse_vent_valid)
         P_pred(i) = 0;
     elseif v >= v_cut_in && v < v_rated
         P_pred(i) = eta_opt * (16/27) * rho * 0.5 * v^3 * (pi*D_opt^2/4);
-    elseif v >= v_rated && v < params_base.v_cut_out
+    elseif v >= v_rated && v < v_cut_out_value
         P_pred(i) = P_max;
     else
         P_pred(i) = 0;
