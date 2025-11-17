@@ -15,16 +15,17 @@ fprintf('=== Chargement des données d''éolienne ===\n\n');
 % Charger le fichier de données de l'éolienne
 filename = 'Eolien_Type15.txt';
 
-% Lire les données (ignorer la première ligne d'en-tête)
-data = readtable(filename, 'HeaderLines', 0);
+% Lire les données avec readmatrix (plus robuste)
+% Le fichier a une ligne d'en-tête et 6 colonnes
+data_matrix = readmatrix(filename, 'NumHeaderLines', 1);
 
-% Extraire les colonnes importantes
-vitesse_vent = data.Vitess_Vent_m_s_;  % Vitesse du vent en m/s
-direction_vent = data.Dir_Vent_deg_;   % Direction du vent en degrés
-puissance_elec = data.Pelec_w_;        % Puissance électrique en W
-pression_atm = data.Patm_Pa_;          % Pression atmosphérique en Pa
-temperature = data.Temp_degC_;         % Température en °C
-statut = data.Statut;                  % Statut de l'éolienne (0 ou 1)
+% Extraire les colonnes par index (plus fiable que par nom)
+vitesse_vent = data_matrix(:, 1);    % Colonne 1: Vitesse du vent en m/s
+direction_vent = data_matrix(:, 2);  % Colonne 2: Direction du vent en degrés
+puissance_elec = data_matrix(:, 3);  % Colonne 3: Puissance électrique en W
+pression_atm = data_matrix(:, 4);    % Colonne 4: Pression atmosphérique en Pa
+temperature = data_matrix(:, 5);     % Colonne 5: Température en °C
+statut = data_matrix(:, 6);          % Colonne 6: Statut de l'éolienne (0 ou 1)
 
 fprintf('Nombre de mesures chargées: %d\n', length(vitesse_vent));
 fprintf('Période de mesure: Données Type 15\n\n');
