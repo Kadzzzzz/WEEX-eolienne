@@ -35,9 +35,44 @@ fprintf('Période de mesure: Données Type 15\n\n');
 idx_valid = (statut == 1);
 vitesse_vent_valid = vitesse_vent(idx_valid);
 puissance_elec_valid = puissance_elec(idx_valid);
+pression_atm_valid = pression_atm(idx_valid);
+temperature_valid = temperature(idx_valid);
 
 fprintf('Nombre de mesures valides (statut = 1): %d\n', sum(idx_valid));
 fprintf('Pourcentage de données valides: %.1f%%\n\n', 100*sum(idx_valid)/length(statut));
+
+%% 2b. CALCUL DE LA MASSE VOLUMIQUE DE L'AIR (LOI DES GAZ PARFAITS)
+% ρ = P / (R_specific × T)
+% où:
+%   P = pression atmosphérique (Pa)
+%   R_specific = constante spécifique de l'air = 287 J/(kg·K)
+%   T = température absolue (K) = T(°C) + 273.15
+
+R_specific = 287;  % Constante spécifique de l'air sec [J/(kg·K)]
+
+% Convertir la température en Kelvin
+temperature_K_valid = temperature_valid + 273.15;
+
+% Calculer la masse volumique pour chaque mesure
+rho_air_valid = pression_atm_valid ./ (R_specific * temperature_K_valid);
+
+fprintf('=== Masse volumique de l''air (loi des gaz parfaits) ===\n');
+fprintf('Température:\n');
+fprintf('  - Minimum: %.1f °C (%.1f K)\n', min(temperature_valid), min(temperature_K_valid));
+fprintf('  - Maximum: %.1f °C (%.1f K)\n', max(temperature_valid), max(temperature_K_valid));
+fprintf('  - Moyenne: %.1f °C (%.1f K)\n\n', mean(temperature_valid), mean(temperature_K_valid));
+
+fprintf('Pression atmosphérique:\n');
+fprintf('  - Minimum: %.0f Pa (%.0f hPa)\n', min(pression_atm_valid), min(pression_atm_valid)/100);
+fprintf('  - Maximum: %.0f Pa (%.0f hPa)\n', max(pression_atm_valid), max(pression_atm_valid)/100);
+fprintf('  - Moyenne: %.0f Pa (%.0f hPa)\n\n', mean(pression_atm_valid), mean(pression_atm_valid)/100);
+
+fprintf('Masse volumique de l''air (ρ):\n');
+fprintf('  - Minimum: %.4f kg/m³\n', min(rho_air_valid));
+fprintf('  - Maximum: %.4f kg/m³\n', max(rho_air_valid));
+fprintf('  - Moyenne: %.4f kg/m³\n', mean(rho_air_valid));
+fprintf('  - Écart-type: %.4f kg/m³\n', std(rho_air_valid));
+fprintf('  - Référence (15°C, 101325 Pa): 1.225 kg/m³\n\n');
 
 %% 3. STATISTIQUES DESCRIPTIVES
 fprintf('=== Statistiques des données ===\n');
@@ -109,7 +144,8 @@ fprintf('Puissance nominale (P_rated): %.2f MW\n\n', P_max/1e6);
 
 %% 6. SAUVEGARDER LES DONNÉES NETTOYÉES
 save('donnees_eolienne_clean.mat', 'vitesse_vent_valid', 'puissance_elec_valid', ...
-     'v_cut_in', 'v_rated', 'v_cut_out', 'P_max');
+     'rho_air_valid', 'pression_atm_valid', 'temperature_valid', ...
+     'v_cut_in', 'v_rated', 'v_cut_out', 'P_max', 'R_specific');
 
 fprintf('Données nettoyées sauvegardées dans: donnees_eolienne_clean.mat\n');
 fprintf('\nExécutez "modelisation_puissance_eolienne.m" pour la modélisation.\n');

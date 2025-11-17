@@ -30,7 +30,24 @@ load_eolienne_data
 
 ---
 
-#### 2.2 Créer les modèles
+#### 2.2A Modélisation physique avec rendement η (RECOMMANDÉ)
+```matlab
+modelisation_physique_eolienne
+```
+
+**Ce script fait:**
+- ✓ Utilise la formule: **P = η × (16/27) × ρ × (1/2) × V³ × (π×D²/4)**
+- ✓ Calcule **ρ** avec la loi des gaz parfaits (P, T mesurés)
+- ✓ Détermine le **rendement η** et le **diamètre D** par optimisation
+- ✓ Compare modèle physique vs données
+- ✓ Analyse le rendement en fonction de la vitesse
+- ✓ Sauvegarde dans `modele_physique.mat`
+
+**Temps d'exécution:** ~20-30 secondes
+
+---
+
+#### 2.2B Modélisation mathématique (alternative)
 ```matlab
 modelisation_puissance_eolienne
 ```
