@@ -11,6 +11,13 @@ clc;
 
 fprintf('=== Analyse des meilleurs emplacements pour éoliennes ===\n\n');
 
+%% 0. VÉRIFIER LE RÉPERTOIRE DE TRAVAIL
+script_dir = fileparts(mfilename('fullpath'));
+if ~isempty(script_dir)
+    cd(script_dir);
+    fprintf('Répertoire de travail changé vers: %s\n\n', script_dir);
+end
+
 %% 1. DÉFINIR LES CONTRAINTES DE FONCTIONNEMENT
 v_cut_in = 3;    % Vitesse de démarrage (m/s)
 v_cut_out = 25;  % Vitesse d'arrêt (m/s)
@@ -58,7 +65,15 @@ if n_emplacements == 0
     error('Aucun emplacement détecté. Vérifiez le format des noms de fichiers.');
 end
 
-fprintf('Emplacements: %s\n\n', strjoin(emplacements, ', '));
+% Créer la liste des emplacements
+emplacements_str = '';
+for i = 1:n_emplacements
+    if i > 1
+        emplacements_str = [emplacements_str ', '];
+    end
+    emplacements_str = [emplacements_str emplacements{i}];
+end
+fprintf('Emplacements: %s\n\n', emplacements_str);
 
 %% 3. FONCTION POUR APPLIQUER LES CONTRAINTES
 function v_effective = appliquer_contraintes(velocity, v_cut_in, v_rated, v_cut_out)
