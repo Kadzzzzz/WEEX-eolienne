@@ -23,18 +23,28 @@ fprintf('  - %.0f ≤ v ≤ %.0f m/s → Puissance nominale (v_eff = %.0f)\n', v
 fprintf('  - v > %.0f m/s → Arrêt sécurité (v_eff = 0)\n\n', v_cut_out);
 
 %% 2. LISTER TOUS LES FICHIERS DE DONNÉES
-data_dir = '2010/';
+data_dir = '2010';
 files = dir(fullfile(data_dir, '*.txt'));
+
+fprintf('Nombre de fichiers trouvés dans %s/: %d\n', data_dir, length(files));
+
+if length(files) == 0
+    error('Aucun fichier trouvé dans le répertoire %s/. Vérifiez que le répertoire existe.', data_dir);
+end
 
 % Extraire les codes d'emplacement uniques (A, B, C, ...)
 emplacements = {};
 for i = 1:length(files)
     filename = files(i).name;
-    % Extraire la lettre (ex: "01A_2010.txt" → "A")
+    fprintf('  Fichier %d: %s\n', i, filename);
+
+    % Format attendu: "01A_2010.txt" → extraire "A" (position 3)
     if length(filename) >= 3
         code = filename(3);  % La lettre est à la position 3
-        if ~ismember(code, emplacements)
-            emplacements{end+1} = code;
+        if isstrprop(code, 'alpha')  % Vérifier que c'est bien une lettre
+            if ~ismember(code, emplacements)
+                emplacements{end+1} = code;
+            end
         end
     end
 end
@@ -42,7 +52,12 @@ end
 emplacements = sort(emplacements);
 n_emplacements = length(emplacements);
 
-fprintf('Nombre d''emplacements trouvés: %d\n', n_emplacements);
+fprintf('\nNombre d''emplacements trouvés: %d\n', n_emplacements);
+
+if n_emplacements == 0
+    error('Aucun emplacement détecté. Vérifiez le format des noms de fichiers.');
+end
+
 fprintf('Emplacements: %s\n\n', strjoin(emplacements, ', '));
 
 %% 3. FONCTION POUR APPLIQUER LES CONTRAINTES
