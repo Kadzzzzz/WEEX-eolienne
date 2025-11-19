@@ -1,0 +1,9 @@
+SIMULATION PRODUCTION ÉOLIENNE - Case 08E
+============================================================
+
+Paramètres Weibull: k=1.810, c=10.961 m/s
+Éolienne: D=90m, η=0.40
+
+Énergie totale: 3847.9 MWh/an
+Puissance moyenne: 0.439 MW
+Facteur de charge: 4.4%

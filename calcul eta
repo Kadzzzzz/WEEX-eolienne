@@ -1,0 +1,27 @@
+donnees = load('Eolien_Type15.txt');
+Vit_vent = donnees(:,1);
+Puissance_reelle= donnees(:,3);
+Press_atm = donnees(:,4);
+Temp_C = donnees(:,5);
+Stat = donnees(:,6);
+N = length(Temp_C);
+M = 28.965/1000
+R = 8.314
+D = 80
+eta = zeros(1,N);
+for i=1:N 
+    if Puissance_reelle(i) > 0 
+        rho = M*(Press_atm(i))/(R*(Temp_C(i)+273.15));
+        eta(i) =  ((27/16)*Puissance_reelle(i)*2*4/(rho*Vit_vent(i)^3*pi*D^2));
+    end
+end
+index_a_garder = (eta ~= 0);
+eta = eta(index_a_garder)
+histogram(eta,5)
+
+plot(Vit_vent,Puissance_reelle,'*')
+
+maxeta = max(eta)
+mineta = min(eta)
+moyeta = mean(eta)
+ecarttypeeta = std(eta)
